@@ -2,6 +2,9 @@ export default function ContactCard({
   name = "My First Contact",
   phone = "555-1234",
   email = "contact@email.com",
+  isFavorite = false,
+  onToggleFavorite = () => {},
+  onDelete = () => {},
 }) {
   const initials = (name || "")
     .split(" ")
@@ -37,16 +40,33 @@ export default function ContactCard({
         </div>
 
         {/* Name + info */}
-        <div className="mt-3 sm:mt-0">
-          <h3
-            className="
-              text-lg font-semibold 
-              text-slate-800 dark:text-slate-100 
-              block max-w-full truncate
-            "
-          >
-            {name}
-          </h3>
+        <div className="mt-3 sm:mt-0 w-full">
+          <div className="flex items-center justify-between gap-2">
+            <h3
+              className="
+                text-lg font-semibold 
+                text-slate-800 dark:text-slate-100 
+                block max-w-[70%] truncate
+              "
+            >
+              {name}
+            </h3>
+
+            {/* ⭐ Favorite Button */}
+            <button
+              onClick={onToggleFavorite}
+              className={`
+                px-2 py-1 text-sm rounded-md transition active:scale-95
+                ${isFavorite
+                  ? "bg-yellow-400 text-black hover:bg-yellow-500"
+                  : "bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
+                }
+              `}
+              aria-label={`Mark ${name} as favorite`}
+            >
+              {isFavorite ? "⭐" : "☆"}
+            </button>
+          </div>
 
           <div className="mt-2 space-y-1 text-sm text-slate-600 dark:text-slate-300">
             {/* Phone */}
@@ -64,9 +84,9 @@ export default function ContactCard({
         </div>
       </div>
 
-      {/* --- Footer actions (opcionales) --- */}
-      {/* Puedes comentar esta sección si no quieres botones */}
+      {/* --- Footer actions --- */}
       <div className="mt-4 flex items-center justify-between gap-2">
+        {/* Edit Button */}
         <button
           className="
             inline-flex items-center gap-2 px-3 py-1.5 
@@ -76,9 +96,25 @@ export default function ContactCard({
             focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400
             transition
           "
-          aria-label={`Editar ${name}`}
+          aria-label={`Edit ${name}`}
         >
           Edit
+        </button>
+
+        {/* Delete Button */}
+        <button
+          onClick={() => onDelete()}
+          className="
+            inline-flex items-center gap-2 px-3 py-1.5 
+            bg-red-600 text-white rounded-md text-sm
+            hover:bg-red-700 
+            active:scale-[0.99]
+            focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400
+            transition
+          "
+          aria-label={`Delete ${name}`}
+        >
+          Delete
         </button>
 
         <button
@@ -90,7 +126,7 @@ export default function ContactCard({
             focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400
             transition
           "
-          aria-label={`Llamar a ${name}`}
+          aria-label={`Call to ${name}`}
         >
           Call
         </button>
