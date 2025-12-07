@@ -1,0 +1,16 @@
+@import "tailwindcss";
+
+/* Fuente global (si no quieres extender tailwind.config) */
+:root {
+  --app-font: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  height:100%
+}
+
+/* Aplica la fuente a todo el sitio */
+html, body {
+  font-family: var(--app-font);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  margin: 0;
+  height:100%
+}
