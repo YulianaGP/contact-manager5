@@ -23,7 +23,7 @@ export default function ContactCard({
         p-5 transition
       "
       role="article"
-      aria-label={`Contacto ${name}`}
+      aria-label={`Contact ${name}`}
     >
       {/* --- Top content --- */}
       <div className="sm:flex sm:items-center sm:gap-4">
@@ -31,7 +31,7 @@ export default function ContactCard({
         <div
           className="
             flex-shrink-0 w-14 h-14 sm:w-16 sm:h-16 
-            rounded-full bg-blue-600 text-white 
+            rounded-full bg-indigo-600 text-white 
             flex items-center justify-center
             font-semibold text-lg
           "
@@ -55,16 +55,10 @@ export default function ContactCard({
             {/* ⭐ Favorite Button */}
             <button
               onClick={onToggleFavorite}
-              className={`
-                px-2 py-1 text-sm rounded-md transition active:scale-95
-                ${isFavorite
-                  ? "bg-yellow-400 text-black hover:bg-yellow-500"
-                  : "bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
-                }
-              `}
+              className={`px-2 py-1 text-sm rounded-md transition active:scale-95 ${isFavorite ? 'bg-yellow-400 text-black hover:bg-yellow-500' : 'bg-slate-200 text-slate-700 hover:bg-slate-300 dark:bg-slate-700 dark:text-slate-200 dark:hover:bg-slate-600'}`}
               aria-label={`Mark ${name} as favorite`}
             >
-              {isFavorite ? "⭐" : "☆"}
+              {isFavorite ? '⭐' : '☆'}
             </button>
           </div>
 
@@ -88,14 +82,7 @@ export default function ContactCard({
       <div className="mt-4 flex items-center justify-between gap-2">
         {/* Edit Button */}
         <button
-          className="
-            inline-flex items-center gap-2 px-3 py-1.5 
-            bg-blue-600 text-white rounded-md text-sm
-            hover:bg-blue-700 
-            active:scale-[0.99] 
-            focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400
-            transition
-          "
+          className="inline-flex items-center gap-2 px-3 py-1.5 bg-indigo-600 text-white rounded-md text-sm hover:bg-indigo-700 active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 transition"
           aria-label={`Edit ${name}`}
         >
           Edit
@@ -104,31 +91,17 @@ export default function ContactCard({
         {/* Delete Button */}
         <button
           onClick={() => onDelete()}
-          className="
-            inline-flex items-center gap-2 px-3 py-1.5 
-            bg-red-600 text-white rounded-md text-sm
-            hover:bg-red-700 
-            active:scale-[0.99]
-            focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400
-            transition
-          "
+          className="inline-flex items-center gap-2 px-3 py-1.5 bg-rose-600 text-white rounded-md text-sm hover:bg-rose-700 active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-400 transition"
           aria-label={`Delete ${name}`}
         >
           Delete
         </button>
 
         <button
-          className="
-            px-3 py-1.5 text-sm rounded-md
-            bg-gray-100 dark:bg-gray-800 
-            text-slate-700 dark:text-gray-200
-            hover:bg-gray-200 dark:hover:bg-gray-700 
-            focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400
-            transition
-          "
+          className="px-3 py-1.5 text-sm rounded-md bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 transition"
           aria-label={`Call to ${name}`}
         >
-          Call
+          Details
         </button>
       </div>
     </article>

@@ -1,9 +1,6 @@
 export default function Footer() {
   return (
-    <footer className="mt-12 py-6 text-center 
-                       text-sm text-gray-600 dark:text-gray-400
-                       bg-white dark:bg-gray-900 border-t 
-                       border-gray-200 dark:border-gray-700">
+    <footer className="mt-12 py-6 text-center text-sm text-slate-600 dark:text-slate-400 bg-white dark:bg-slate-950 border-t border-slate-200 dark:border-slate-800">
       <p className="mb-1">© {new Date().getFullYear()} Contact Manager</p>
     </footer>
   );

@@ -1,14 +1,18 @@
 // src/components/Header.jsx
 import { useState } from "react";
 import { Link, NavLink } from "react-router-dom";
+import { useContacts } from "../context/ContactsContext";
 
 export default function Header() {
   const [open, setOpen] = useState(false);
 
+  const { openCreate } = useContacts();
+
   const navItems = [
     { to: "/", label: "Home" },
     { to: "/contacts", label: "Contacts" },
-    { to: "/contacts/new", label: "Add contact", primary: true },
+    // keep the entry for mapping but mark special action
+    { to: "/contacts/new", label: "Add contact", primary: true, action: openCreate },
   ];
 
   return (
@@ -35,12 +39,8 @@ export default function Header() {
               </span>
 
               <span className="hidden sm:inline-block">
-                <span className="text-lg font-semibold leading-tight">
-                  Contact Manager
-                </span>
-                <span className="block text-xs text-gray-500 dark:text-gray-400 -mt-0.5">
-                  My important contacts
-                </span>
+                <span className="text-lg font-semibold leading-tight">Contact Manager</span>
+                <span className="block text-xs text-slate-500 dark:text-slate-400 -mt-0.5">My important contacts</span>
               </span>
             </Link>
           </div>
@@ -60,7 +60,7 @@ export default function Header() {
                   dark:bg-gray-800 dark:border-gray-700 dark:placeholder-gray-500
                   transition-colors
                 "
-                aria-label="Buscar contactos"
+                aria-label="Search contacts"
               />
               <span
                 className="
@@ -77,45 +77,54 @@ export default function Header() {
           {/* Right: nav / actions */}
           <div className="flex items-center gap-3">
             {/* Desktop nav */}
-            <nav
-              className="hidden md:flex items-center gap-2"
-              aria-label="Principal"
-              role="navigation"
-            >
-              {navItems.map((item, i) => (
-                <NavLink
-                  key={item.to}
-                  to={item.to}
-                  end={item.to === "/"}
-                  className={({ isActive }) =>
-                    [
-                      "px-3 py-2 rounded-md text-sm font-medium transition",
-                      // primary button style
-                      item.primary
-                        ? "inline-flex items-center gap-2 bg-blue-600 text-white shadow-sm hover:bg-blue-700 active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 disabled:opacity-60 disabled:cursor-not-allowed"
-                        : "text-slate-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800",
-                      // active state
-                      isActive ? "ring-2 ring-blue-300 dark:ring-blue-500" : "",
-                    ].join(" ")
-                  }
-                  aria-current={({ isActive }) => (isActive ? "page" : undefined)}
-                >
-                  {item.label}
-                </NavLink>
-              ))}
+            <nav className="hidden md:flex items-center gap-2" aria-label="Main" role="navigation">
+              {navItems.map((item, i) => {
+                // If the item defines an `action`, render a button that triggers it instead of a NavLink
+                if (item.action) {
+                  return (
+                    <button
+                      key={item.to}
+                      type="button"
+                      onClick={item.action}
+                      className={[
+                        "px-3 py-2 rounded-md text-sm font-medium transition",
+                        item.primary
+                          ? "inline-flex items-center gap-2 bg-blue-600 text-white shadow-sm hover:bg-blue-700 active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 disabled:opacity-60 disabled:cursor-not-allowed"
+                          : "text-slate-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800",
+                      ].join(" ")}
+                    >
+                      {item.label}
+                    </button>
+                  );
+                }
+
+                return (
+                  <NavLink
+                    key={item.to}
+                    to={item.to}
+                    end={item.to === "/"}
+                    className={({ isActive }) =>
+                      [
+                        "px-3 py-2 rounded-md text-sm font-medium transition",
+                        item.primary
+                          ? "inline-flex items-center gap-2 bg-blue-600 text-white shadow-sm hover:bg-blue-700 active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 disabled:opacity-60 disabled:cursor-not-allowed"
+                          : "text-slate-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800",
+                        isActive ? "ring-2 ring-blue-300 dark:ring-blue-500" : "",
+                      ].join(" ")
+                    }
+                    aria-current={({ isActive }) => (isActive ? "page" : undefined)}
+                  >
+                    {item.label}
+                  </NavLink>
+                );
+              })}
             </nav>
 
             {/* Profile / Avatar button (example) */}
             <button
               type="button"
-              className="
-                hidden sm:inline-flex items-center justify-center w-9 h-9 rounded-full
-                bg-gray-100 dark:bg-gray-800 text-sm font-medium text-slate-800 dark:text-gray-200
-                hover:bg-gray-200 dark:hover:bg-gray-700
-                focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-400
-                transition
-              "
-              aria-label="Abrir perfil"
+              className="hidden sm:inline-flex items-center justify-center w-9 h-9 rounded-full bg-slate-100 dark:bg-slate-800 text-sm font-medium text-slate-800 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-indigo-500 transition"
+              aria-label="Open profile"
             >
               Y
             </button>
@@ -126,15 +135,9 @@ export default function Header() {
               onClick={() => setOpen((v) => !v)}
               aria-expanded={open}
               aria-controls="mobile-menu"
-              className="
-                inline-flex items-center justify-center p-2 rounded-md
-                text-slate-700 dark:text-gray-200 bg-transparent hover:bg-gray-100 dark:hover:bg-gray-800
-                focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400
-                md:hidden
-                transition
-              "
+              className="inline-flex items-center justify-center p-2 rounded-md text-slate-700 dark:text-slate-200 bg-transparent hover:bg-slate-100 dark:hover:bg-slate-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 md:hidden transition"
             >
-              <span className="sr-only">Abrir menú</span>
+              <span className="sr-only">Open menu</span>
               {/* icon */}
               <svg
                 className="w-6 h-6"
@@ -158,7 +161,7 @@ export default function Header() {
       {/* Mobile menu (collapsible) */}
       <div
         id="mobile-menu"
-        className={`md:hidden border-t border-gray-100 dark:border-gray-800 transition-max-h duration-200 overflow-hidden ${
+        className={`md:hidden border-t border-slate-100 dark:border-slate-800 transition-max-h duration-200 overflow-hidden ${
           open ? "max-h-[400px]" : "max-h-0"
         }`}
       >
@@ -178,9 +181,9 @@ export default function Header() {
                     [
                       "block w-full text-left px-2 py-1 rounded-md transition",
                       item.primary
-                        ? "bg-blue-600 text-white font-semibold hover:bg-blue-700"
-                        : "text-slate-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800",
-                      isActive ? "ring-1 ring-blue-300 dark:ring-blue-500" : "",
+                        ? "bg-indigo-600 text-white font-semibold hover:bg-indigo-700"
+                        : "text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800",
+                      isActive ? "ring-1 ring-indigo-300 dark:ring-indigo-500" : "",
                     ].join(" ")
                   }
                   onClick={() => setOpen(false)}
@@ -191,15 +194,15 @@ export default function Header() {
             ))}
           </ul>
 
-          <div className="pt-3 border-t border-gray-100 dark:border-gray-800">
+          <div className="pt-3 border-t border-slate-100 dark:border-slate-800">
             <button
-              className="w-full text-left px-3 py-2 rounded-md text-sm text-slate-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
+              className="w-full text-left px-3 py-2 rounded-md text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
               onClick={() => {
-                // ejemplo de acción de logout o ir a perfil
+                // example action for logout or go to profile
                 setOpen(false);
               }}
             >
-              Perfil
+              Profile
             </button>
           </div>
         </div>

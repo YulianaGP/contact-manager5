@@ -2,25 +2,28 @@ import { Routes, Route } from 'react-router-dom';
 import Landing from './components/Landing';
 import Layout from './layout/Layout';
 import ContactCard from './components/ContactCard';
-import ContactListPage from './components/ContactListPage'; 
+import ContactListPage from './components/ContactListPage';
+import FavoritesPage from './components/FavoritesPage';
 
 function App() {
-  
   return (
     <Routes>
-      {/* Landing separado (sin Layout) */}
+      {/* Landing page (without Layout) */}
       <Route path="/" element={<Landing />} />
 
-      {/* ÁREA PRINCIPAL: el Layout se monta cuando el usuario entra a /contacts */}
-      <Route path="/contacts" element={<Layout />}>
-        {/* Index route dentro del layout */}
-        <Route index element={<ContactListPage />} />
+      {/* MAIN AREA: Layout is mounted when user enters /contacts or related routes */}
+      <Route element={<Layout />}>
+        {/* All contacts page */}
+        <Route path="/contacts" element={<ContactListPage />} />
+        
+        {/* Favorites page */}
+        <Route path="/favorites" element={<FavoritesPage />} />
 
-        {/* Ejemplo de ruta de detalle; usa tu ContactCard o componente de detalle */}
-        <Route path=":id" element={<ContactCard />} />
+        {/* Detail route example; use your ContactCard or detail component */}
+        <Route path="/contacts/:id" element={<ContactCard />} />
       </Route>
 
-      {/* Si quieres añadir otras páginas públicas (about, help), agrégalas aquí */}
+      {/* Add other public pages (about, help) here if needed */}
     </Routes>
   );
 }
