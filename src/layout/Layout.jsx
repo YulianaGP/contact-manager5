@@ -18,7 +18,7 @@ function LayoutContent() {
     { to: '/groups', label: 'Groups' },
     { to: '/settings', label: 'Settings' },
   ];
-
+  
   return (
     <div className="h-screen flex flex-col bg-gray-50 text-slate-900 dark:bg-gray-900 dark:text-gray-100">
       {/* Header */}

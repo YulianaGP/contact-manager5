@@ -1,12 +1,14 @@
 // src/components/ContactListPage.jsx
 import React from 'react';
-import ContactCard from '../components/ContactCard';
+import ContactCard from './ContactCard';
 import { useContacts } from '../context/ContactsContext';
+
+
 
 export default function ContactListPage() {
   // Use contacts from context
   const { contacts, toggleFavorite } = useContacts();
-
+  
   return (
     // flex-1 para tomar el espacio disponible del Layout; overflow-auto para scroll interno
     <div className="flex-1 p-4 overflow-auto">
@@ -20,9 +22,11 @@ export default function ContactListPage() {
           y las tarjetas con h-full se estiran dentro de su celda */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 auto-rows-fr">
         {contacts.map((contact) => (
+
           <div key={contact.id} className="h-full">
             <ContactCard
               {...contact}
+              group={contact.group ?? "none"}
               onToggleFavorite={() => toggleFavorite(contact.id)}
             />
           </div>

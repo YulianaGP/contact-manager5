@@ -1,11 +1,20 @@
+import { useState } from "react";
+import { GROUP_COLORS } from './utils/groupColors';
+
+const API_URL = import.meta.env.VITE_API_URL;
+
 export default function ContactCard({
   name = "My First Contact",
   phone = "555-1234",
   email = "contact@email.com",
+  group = "None",
   isFavorite = false,
   onToggleFavorite = () => {},
   onDelete = () => {},
 }) {
+  
+  const colorClasses = GROUP_COLORS[group] ?? 'bg-white dark:bg-slate-900';
+
   const initials = (name || "")
     .split(" ")
     .map((n) => n[0])
@@ -15,16 +24,18 @@ export default function ContactCard({
 
   return (
     <article
-      className="
+      className={`
         h-full w-full flex flex-col justify-between
-        bg-white dark:bg-slate-900 
-        rounded-2xl shadow-sm 
-        border border-gray-200 dark:border-slate-700 
+        dark:bg-slate-900
+        rounded-2xl shadow-sm
+        border border-gray-200 dark:border-slate-700
         p-5 transition
-      "
+        ${colorClasses}
+      `}
       role="article"
       aria-label={`Contact ${name}`}
     >
+
       {/* --- Top content --- */}
       <div className="sm:flex sm:items-center sm:gap-4">
         {/* Avatar */}

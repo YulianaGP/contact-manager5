@@ -6,17 +6,19 @@ export default function ContactModal() {
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
+  const [group, setGroup] = useState('None');
 
   if (!isCreateOpen) return null;
 
   function handleSave(e) {
     e.preventDefault();
     if (!name.trim()) return;
-    addContact({ name: name.trim(), phone: phone.trim(), email: email.trim() });
+    addContact({ name: name.trim(), phone: phone.trim(), email: email.trim(), group });
     setName('');
     setPhone('');
     setEmail('');
     closeCreate();
+    setGroup('None');
   }
 
   const inputCls =
@@ -55,6 +57,22 @@ export default function ContactModal() {
         <label className="block mt-3">
           <span className="text-sm text-slate-700 dark:text-slate-200">Email</span>
           <input value={email} onChange={(e) => setEmail(e.target.value)} type="email" className={inputCls} />
+        </label>
+
+        <label className="block mt-3">
+          <span className="text-sm text-slate-700 dark:text-slate-200">Group</span>
+
+          <select
+            value={group}
+            onChange={(e) => setGroup(e.target.value)}
+            className={inputCls}
+          >
+            <option value="None">None</option>
+            <option value="Family">Family</option>
+            <option value="Work">Work</option>
+            <option value="Friends">Friends</option>
+            <option value="Client">Client</option>
+          </select>
         </label>
 
         <div className="mt-5 flex justify-end gap-3">

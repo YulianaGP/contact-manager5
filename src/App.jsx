@@ -3,9 +3,10 @@ import Landing from './components/Landing';
 import Layout from './layout/Layout';
 import ContactCard from './components/ContactCard';
 import ContactListPage from './components/ContactListPage';
-import FavoritesPage from './components/FavoritesPage';
+import FavoritesPage from './components/pages/FavoritesPage';
 
 function App() {
+  
   return (
     <Routes>
       {/* Landing page (without Layout) */}
