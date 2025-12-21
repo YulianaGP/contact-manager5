@@ -3,19 +3,21 @@ import { useContacts } from '../context/ContactsContext';
 
 export default function ContactModal() {
   const { isCreateOpen, addContact, closeCreate } = useContacts();
-  const [name, setName] = useState('');
-  const [phone, setPhone] = useState('');
+  const [fullname, setFullname] = useState('');
+  const [phonenumber, setPhonenumber] = useState('');
   const [email, setEmail] = useState('');
   const [group, setGroup] = useState('None');
 
   if (!isCreateOpen) return null;
 
   function handleSave(e) {
+    console.log('✅ THIS HANDLE SAVE IS RUNNING');
+
     e.preventDefault();
-    if (!name.trim()) return;
-    addContact({ name: name.trim(), phone: phone.trim(), email: email.trim(), group });
-    setName('');
-    setPhone('');
+    if (!fullname.trim()) return;
+    addContact({ fullname: fullname.trim(), phonenumber: phonenumber.trim(), email: email.trim(), group });
+    setFullname('');
+    setPhonenumber('');
     setEmail('');
     closeCreate();
     setGroup('None');
@@ -46,12 +48,12 @@ export default function ContactModal() {
 
         <label className="block">
           <span className="text-sm text-slate-700 dark:text-slate-200">Name</span>
-          <input value={name} onChange={(e) => setName(e.target.value)} className={inputCls} required />
+          <input value={fullname} onChange={(e) => setFullname(e.target.value)} className={inputCls} required />
         </label>
 
         <label className="block mt-3">
           <span className="text-sm text-slate-700 dark:text-slate-200">Phone</span>
-          <input value={phone} onChange={(e) => setPhone(e.target.value)} className={inputCls} />
+          <input value={phonenumber} onChange={(e) => setPhonenumber(e.target.value)} className={inputCls} />
         </label>
 
         <label className="block mt-3">

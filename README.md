@@ -196,7 +196,7 @@ This project has been developed and evaluated according to the following 4 key c
 
 **Evaluation:**
 - ✅ **Core CRUD Operations**:
-  - ✓ **Create**: Modal form to add new contacts with name, phone, email
+  - ✓ **Create**: Modal form to add new contacts with fullname, phonenumber, email
   - ✓ **Read**: Display contacts in list and detail views
   - ✓ **Update**: Toggle favorite status (partial update implemented)
   - ✓ **Delete**: Delete button functionality in ContactCard
@@ -226,7 +226,7 @@ This project has been developed and evaluated according to the following 4 key c
   
 - ✅ **Additional Features**:
   - Contact initials displayed as avatar
-  - Phone and email visible on cards
+  - Phonenumber and email visible on cards
   - Professional color scheme (blue/slate palette)
   - Proper accessibility with ARIA labels and semantic HTML
 

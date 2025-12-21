@@ -1,11 +1,11 @@
-import { useState } from "react";
+
 import { GROUP_COLORS } from './utils/groupColors';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
 export default function ContactCard({
-  name = "My First Contact",
-  phone = "555-1234",
+  fullname = "My First Contact",
+  phonenumber = "555-1234",
   email = "contact@email.com",
   group = "None",
   isFavorite = false,
@@ -15,7 +15,7 @@ export default function ContactCard({
   
   const colorClasses = GROUP_COLORS[group] ?? 'bg-white dark:bg-slate-900';
 
-  const initials = (name || "")
+  const initials = (fullname || "")
     .split(" ")
     .map((n) => n[0])
     .filter(Boolean)
@@ -33,7 +33,7 @@ export default function ContactCard({
         ${colorClasses}
       `}
       role="article"
-      aria-label={`Contact ${name}`}
+      aria-label={`Contact ${fullname}`}
     >
 
       {/* --- Top content --- */}
@@ -41,7 +41,7 @@ export default function ContactCard({
         {/* Avatar */}
         <div
           className="
-            flex-shrink-0 w-14 h-14 sm:w-16 sm:h-16 
+            shrink-0 w-14 h-14 sm:w-16 sm:h-16 
             rounded-full bg-indigo-600 text-white 
             flex items-center justify-center
             font-semibold text-lg
@@ -60,14 +60,14 @@ export default function ContactCard({
                 block max-w-[70%] truncate
               "
             >
-              {name}
+              {fullname}
             </h3>
 
             {/* ⭐ Favorite Button */}
             <button
               onClick={onToggleFavorite}
               className={`px-2 py-1 text-sm rounded-md transition active:scale-95 ${isFavorite ? 'bg-yellow-400 text-black hover:bg-yellow-500' : 'bg-slate-200 text-slate-700 hover:bg-slate-300 dark:bg-slate-700 dark:text-slate-200 dark:hover:bg-slate-600'}`}
-              aria-label={`Mark ${name} as favorite`}
+              aria-label={`Mark ${fullname} as favorite`}
             >
               {isFavorite ? '⭐' : '☆'}
             </button>
@@ -77,13 +77,13 @@ export default function ContactCard({
             {/* Phone */}
             <p className="flex items-center gap-2">
               <span aria-hidden="true">📱</span>
-              <span className="block max-w-full truncate">{phone}</span>
+              <span className="block max-w-full truncate">{phonenumber}</span>
             </p>
 
             {/* Email */}
             <p className="flex items-center gap-2">
               <span aria-hidden="true">✉️</span>
-              <span className="block max-w-full break-words">{email}</span>
+              <span className="block max-w-full wrap-break-words">{email}</span>
             </p>
           </div>
         </div>
@@ -94,7 +94,7 @@ export default function ContactCard({
         {/* Edit Button */}
         <button
           className="inline-flex items-center gap-2 px-3 py-1.5 bg-indigo-600 text-white rounded-md text-sm hover:bg-indigo-700 active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 transition"
-          aria-label={`Edit ${name}`}
+          aria-label={`Edit ${fullname}`}
         >
           Edit
         </button>
@@ -103,14 +103,14 @@ export default function ContactCard({
         <button
           onClick={() => onDelete()}
           className="inline-flex items-center gap-2 px-3 py-1.5 bg-rose-600 text-white rounded-md text-sm hover:bg-rose-700 active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-400 transition"
-          aria-label={`Delete ${name}`}
+          aria-label={`Delete ${fullname}`}
         >
           Delete
         </button>
 
         <button
           className="px-3 py-1.5 text-sm rounded-md bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 transition"
-          aria-label={`Call to ${name}`}
+          aria-label={`Call to ${fullname}`}
         >
           Details
         </button>
