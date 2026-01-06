@@ -1,7 +1,7 @@
 // src/components/Header.jsx
 import { useState } from "react";
 import { Link, NavLink } from "react-router-dom";
-import { useContacts } from "../context/ContactsContext";
+import { useContacts } from "../context/useContacts";
 
 export default function Header() {
   const [open, setOpen] = useState(false);
@@ -78,7 +78,7 @@ export default function Header() {
           <div className="flex items-center gap-3">
             {/* Desktop nav */}
             <nav className="hidden md:flex items-center gap-2" aria-label="Main" role="navigation">
-              {navItems.map((item, i) => {
+              {navItems.map((item) => {
                 // If the item defines an `action`, render a button that triggers it instead of a NavLink
                 if (item.action) {
                   return (
@@ -138,7 +138,7 @@ export default function Header() {
               className="inline-flex items-center justify-center p-2 rounded-md text-slate-700 dark:text-slate-200 bg-transparent hover:bg-slate-100 dark:hover:bg-slate-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 md:hidden transition"
             >
               <span className="sr-only">Open menu</span>
-              {/* icon */}
+              {/* icon */}  
               <svg
                 className="w-6 h-6"
                 fill="none"

@@ -1,6 +1,6 @@
 import React from 'react';
 import ContactCard from '../ContactCard';
-import { useContacts } from '../../context/ContactsContext';
+import { useContacts } from '../../context/useContacts';
 
 export default function FavoritesPage() {
   const { contacts, toggleFavorite } = useContacts();

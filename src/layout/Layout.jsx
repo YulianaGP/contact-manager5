@@ -4,7 +4,8 @@ import { Link, NavLink, Outlet } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import ContactModal from '../components/ContactModal';
-import { ContactsProvider, useContacts } from '../context/ContactsContext';
+import { ContactsProvider } from '../context/ContactsContext';
+import { useContacts } from '../context/useContacts';
 
 function LayoutContent() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -16,7 +17,7 @@ function LayoutContent() {
     { to: '/contacts', label: 'All' },
     { to: '/favorites', label: 'Favorites' },
     { to: '/groups', label: 'Groups' },
-    { to: '/settings', label: 'Settings' },
+    { to: '/setting', label: 'Setting' },
   ];
   
   return (
@@ -41,7 +42,7 @@ function LayoutContent() {
               >
                 <span>{item.label}</span>
                 {item.to === '/favorites' && (
-                  <span className="ml-2 inline-flex items-center justify-center min-w-[24px] h-6 px-2 bg-blue-600 text-white text-xs font-semibold rounded-full">
+                  <span className="ml-2 inline-flex items-center justify-center min-w-6 h-6 px-2 bg-blue-600 text-white text-xs font-semibold rounded-full">
                     {favoriteCount}
                   </span>
                 )}
@@ -71,7 +72,7 @@ function LayoutContent() {
           {sidebarOpen && (
             <div id="mobile-sidebar" className="md:hidden mb-4 bg-white dark:bg-slate-800 rounded-lg shadow p-3">
               <nav className="space-y-1">
-                {navItems.map((item, idx) => (
+                {navItems.map((item) => (
                   <div key={item.to} className="flex items-center justify-between">
                     <NavLink
                       to={item.to}
@@ -81,7 +82,7 @@ function LayoutContent() {
                       {item.label}
                     </NavLink>
                     {item.to === '/favorites' && (
-                      <span className="ml-2 inline-flex items-center justify-center min-w-[24px] h-6 px-2 bg-blue-600 text-white text-xs font-semibold rounded-full">
+                      <span className="ml-2 inline-flex items-center justify-center min-w-6 h-6 px-2 bg-blue-600 text-white text-xs font-semibold rounded-full">
                         {favoriteCount}
                       </span>
                     )}

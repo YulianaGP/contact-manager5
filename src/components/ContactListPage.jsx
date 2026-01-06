@@ -1,40 +1,77 @@
 // src/components/ContactListPage.jsx
-import React from 'react';
 import ContactCard from './ContactCard';
-import { useContacts } from '../context/ContactsContext';
+import { useContacts } from '../context/useContacts';
 
 export default function ContactListPage() {
-  // Use contacts from context
-  const { contacts, toggleFavorite } = useContacts();
-  
-  console.log("CONTACTS FROM CONTEXT:", contacts);
+  const {
+    contacts,
+    isLoading,
+    error,
+    loadContacts,
+    toggleFavorite,
+  } = useContacts();
 
   return (
-    // flex-1 para tomar el espacio disponible del Layout; overflow-auto para scroll interno
     <div className="flex-1 p-4 overflow-auto">
+      {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-2xl font-semibold text-slate-800 dark:text-slate-100">
           My Contacts
         </h2>
+
+        <button
+          onClick={loadContacts}
+          disabled={isLoading}
+          className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 disabled:opacity-60"
+        >
+          {isLoading ? 'Loading...' : 'Load'}
+        </button>
       </div>
 
-      {/* Grid responsiva: cada celda tiene la misma altura (auto-rows-fr)
-          y las tarjetas con h-full se estiran dentro de su celda */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 auto-rows-fr">
-        {contacts.map((contact) => (
+      {/* Loading */}
+      {isLoading && (
+        <div className="mb-4 text-center text-slate-600 dark:text-slate-300">
+          Loading contacts from API...
+        </div>
+      )}
 
-          <div key={contact.id} className="h-full">
-            <ContactCard
-              fullname={contact.fullname}
-              phonenumber={contact.phonenumber}
-              email={contact.email}
-              group={contact.group ?? "none"}
-              isFavorite={contact.isFavorite}
-              onToggleFavorite={() => toggleFavorite(contact.id)}
-            />
-          </div>
-        ))}
-      </div>
+      {/* Error */}
+      {error && (
+        <div className="mb-4 p-4 bg-red-100 text-red-700 rounded text-center">
+          <p>{error}</p>
+          <button
+            onClick={loadContacts}
+            className="mt-2 px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
+          >
+            Retry
+          </button>
+        </div>
+      )}
+
+      {/* Empty */}
+      {!isLoading && !error && contacts.length === 0 && (
+        <div className="text-center text-slate-500 dark:text-slate-400 mt-6">
+          No contacts loaded. Click <strong>Load</strong> to fetch contacts.
+        </div>
+      )}
+
+      {/* Grid */}
+      {!isLoading && !error && contacts.length > 0 && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 auto-rows-fr">
+          {contacts.map((contact) => (
+            <div key={contact.id} className="h-full">
+              <ContactCard
+                fullname={contact.fullname}
+                phonenumber={contact.phonenumber}
+                email={contact.email}
+                group={contact.group ?? 'none'}
+                isFavorite={contact.isFavorite}
+                onToggleFavorite={() => toggleFavorite(contact.id)}
+              />
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

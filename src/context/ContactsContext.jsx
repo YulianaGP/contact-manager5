@@ -1,25 +1,34 @@
-import React, { createContext, useContext, useState, useCallback, useMemo } from 'react';
+import React, { createContext, useState, useCallback, useMemo } from 'react';
+import { fetchContacts } from '../services/contactService';
 
 const ContactsContext = createContext(null);
 
-export function useContacts() {
-  return useContext(ContactsContext);
-}
-
 export function ContactsProvider({ children }) {
-  const [contacts, setContacts] = useState([
-    { id: 1, fullname: 'Ana Pérez', phonenumber: '+51 912 345 678', email: 'ana@example.com', isFavorite: false, group: 'Family' },
-    { id: 2, fullname: 'Luis Gómez', phonenumber: '+51 988 123 456', email: 'luis@example.com', isFavorite: false, group: 'Work' },
-    { id: 3, fullname: 'María Ruiz', phonenumber: '+51 999 222 333', email: 'maria@example.com', isFavorite: false, group: 'Friends' },
-    { id: 4, fullname: 'Carlos Soto', phonenumber: '+51 977 111 222', email: 'carlos@example.com', isFavorite: false, group: 'Client' },
-  ]);
+  const [contacts, setContacts] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const [isCreateOpen, setCreateOpen] = useState(false);
+
+  // 🔹 Load contacts from API (via service)
+  const loadContacts = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const data = await fetchContacts();
+      setContacts(data);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
 
   const addContact = useCallback((contact) => {
     console.log("🔥 ADD CONTACT CALLED WITH:", contact);
     console.log("🚨 KEYS:", Object.keys(contact));
-    debugger;
+    
     
     // Ensure a unique id; use Date.now() for simplicity
     const id = Date.now();
@@ -38,12 +47,27 @@ export function ContactsProvider({ children }) {
 
   const value = useMemo(() => ({
     contacts,
+    isLoading,
+    error,
+    loadContacts,
     addContact,
     toggleFavorite,
     isCreateOpen,
     openCreate,
     closeCreate,
-  }), [contacts, addContact, toggleFavorite, isCreateOpen, openCreate, closeCreate]);
+  }),
+  [
+      contacts,
+      isLoading,
+      error,
+      loadContacts,
+      addContact,
+      toggleFavorite,
+      isCreateOpen,
+      openCreate,
+      closeCreate,
+    ]
+  );
 
   return <ContactsContext.Provider value={value}>{children}</ContactsContext.Provider>;
 }

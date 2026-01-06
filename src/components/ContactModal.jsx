@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useContacts } from '../context/ContactsContext';
+import { useContacts } from '../context/useContacts';
 
 export default function ContactModal() {
   const { isCreateOpen, addContact, closeCreate } = useContacts();
