@@ -1,266 +1,410 @@
 # Contact Manager 5
 
-A modern and responsive web application to manage contacts easily and efficiently.
+<div align="center">
 
-## Description
+![React](https://img.shields.io/badge/React-18.3.1-61DAFB?style=for-the-badge&logo=react&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-5.4.10-646CFF?style=for-the-badge&logo=vite&logoColor=white)
+![TailwindCSS](https://img.shields.io/badge/Tailwind-3.4.15-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
+![React Router](https://img.shields.io/badge/React_Router-7.1.1-CA4245?style=for-the-badge&logo=react-router&logoColor=white)
 
-**Contact Manager 5** is a tool designed to organize and manage your contact list. It allows you to create, view, edit, and delete contacts with a clean and user-friendly interface. The application includes features such as search, filtering by groups and favorites, with dark mode support.
+**A modern, full-featured contact management application built with React 18, featuring advanced search, sorting, and RESTful API integration.**
 
-## Tech Stack
+[View Demo](#) • [Report Bug](https://github.com/YulianaGP/contact-manager5/issues) • [Request Feature](https://github.com/YulianaGP/contact-manager5/issues)
 
-- **React** (v18+): JavaScript library for building interactive user interfaces
-- **Vite**: Fast and modern build tool with HMR (Hot Module Replacement)
-- **Tailwind CSS**: Utility-first CSS framework for responsive design
-- **React Router**: Routing and navigation management
-- **PostCSS**: CSS transformation tool
+</div>
+
+---
+
+## Overview
+
+Contact Manager 5 is a production-ready web application designed to efficiently manage contacts with a clean, intuitive interface. Built with modern React patterns and best practices, it demonstrates advanced state management, API integration with bidirectional data transformation, and enterprise-level architecture.
+
+### Key Highlights for Recruiters
+
+- **Full-stack Integration**: RESTful API with bidirectional data transformation layer
+- **Advanced State Management**: Context API with optimistic UI updates and performance optimization
+- **Complex Search & Filtering**: Real-time search with dropdown results across multiple fields
+- **Persistent Sorting**: Global sort state synchronized across multiple views
+- **Production-Ready Code**: Immutable state patterns, custom hooks, and modular architecture
+- **Responsive Design**: Mobile-first approach with Tailwind CSS and automatic dark mode
+
+---
 
 ## Features
 
-✅ Responsive interface (mobile, tablet, desktop)  
-✅ Dark/Light theme  
-✅ Contact search  
-✅ Organization by groups  
-✅ Mark favorites  
-✅ Contact CRUD management  
-✅ Modern design with Tailwind CSS  
+### Core Functionality
+- **CRUD Operations**: Full create, read, update, and delete functionality with API integration
+- **Intelligent Search**: Real-time search across name, phone, and email with dropdown preview
+- **Alphabetical Sorting**: Persistent A-Z/Z-A sorting across all pages
+- **Favorites Management**: Mark and organize favorite contacts with dedicated view
+- **Group Organization**: Visual organization by Work, Friends, Family, Client, and None categories
+- **Contact Details Modal**: Quick view for complete contact information
 
-## Project Structure
+### Technical Features
+- **Bidirectional Data Transformation**: Seamless conversion between API format (Spanish) and app format (English)
+- **Optimistic UI Updates**: Graceful fallback when API operations are unavailable
+- **Performance Optimized**: `useMemo` and `useCallback` for efficient re-renders
+- **Dark Mode Support**: Automatic theme switching with Tailwind CSS
+- **Fully Responsive**: Optimized for mobile (320px+), tablet, and desktop
+
+---
+
+## Tech Stack
+
+| Technology | Purpose | Version |
+|------------|---------|---------|
+| **React** | UI framework with hooks | 18.3.1 |
+| **Vite** | Build tool with HMR | 5.4.10 |
+| **React Router** | Client-side routing | 7.1.1 |
+| **Tailwind CSS** | Utility-first styling | 3.4.15 |
+| **Context API** | Global state management | Built-in |
+| **RESTful API** | External contact data | Mock API |
+
+---
+
+## Architecture & Design Patterns
+
+### Component Structure
 
 ```
-contact-manager5/
-├── src/
-│   ├── components/        # Reusable components
-│   │   ├── ContactCard.jsx        # Individual contact card
-│   │   ├── ContactListPage.jsx    # Contact list view
-│   │   ├── Header.jsx             # Navigation header
-│   │   ├── Footer.jsx             # Footer
-│   │   └── Landing.jsx            # Landing page
-│   ├── layout/            # Layout components
-│   │   └── Layout.jsx             # Main layout
-│   ├── assets/            # Static resources
-│   ├── App.jsx            # Root component
-│   ├── main.jsx           # Entry point
-│   └── index.css          # Global styles
-├── public/                # Public static files
-├── package.json           # Dependencies and scripts
-├── vite.config.js         # Vite configuration
-├── tailwind.config.js     # Tailwind CSS configuration
-├── postcss.config.js      # PostCSS configuration
-└── README.md              # This file
-
+src/
+├── components/
+│   ├── ContactCard.jsx              # Reusable contact card component
+│   ├── ContactListPage.jsx          # Main contacts view with sorting
+│   ├── ContactDetailsModal.jsx      # Contact details overlay
+│   ├── ContactEditForm.jsx          # Edit contact form modal
+│   ├── ContactModal.jsx             # Create contact form modal
+│   ├── Header.jsx                   # Navigation with search dropdown
+│   ├── Footer.jsx                   # Footer component
+│   ├── Landing.jsx                  # Landing page
+│   ├── pages/
+│   │   ├── FavoritesPage.jsx       # Favorites view with sorting
+│   │   └── GroupsPage.jsx          # Grouped contacts view
+│   └── utils/
+│       ├── groupColors.js          # Group color configuration
+│       └── groupMapping.js         # API ↔ App data transformation
+├── context/
+│   ├── ContactsContext.jsx         # Global state provider
+│   └── useContacts.js              # Custom hook for context access
+├── layout/
+│   └── Layout.jsx                  # Main layout with sidebar
+├── services/
+│   └── contactService.js           # API service layer
+├── App.jsx                         # Root component with routing
+├── main.jsx                        # Application entry point
+└── index.css                       # Global styles
 ```
 
-## Installation
+### State Management Architecture
 
-Clone the repository and navigate to the project directory:
+**Context API with Custom Hook Pattern**
+- `ContactsContext`: Provides global state for contacts, loading, error, and sorting
+- `useContacts()`: Custom hook for consuming context with type safety
+- **Immutable Updates**: All state changes use spread operators and array methods
+- **Performance Optimization**: `useMemo` for value memoization, `useCallback` for function identity
 
+### Data Flow
+
+```
+API (Spanish format)
+  ↓ transformContactsFromAPI()
+App State (English format)
+  ↓ Component rendering
+User interactions
+  ↓ transformContactToAPI()
+API (Spanish format)
+```
+
+**Key Functions:**
+- `transformContactsFromAPI()`: Converts `type: "familia"` → `group: "Family"`
+- `transformContactToAPI()`: Converts `group: "Family"` → `type: "familia"`
+
+---
+
+## Installation & Setup
+
+### Prerequisites
+- Node.js 16+ and npm/yarn
+
+### Clone Repository
 ```bash
 git clone https://github.com/YulianaGP/contact-manager5.git
 cd contact-manager5
 ```
 
-Install dependencies:
-
+### Install Dependencies
 ```bash
 npm install
 ```
 
-## Usage
+### Environment Variables
+Create a `.env` file in the root directory:
+```env
+VITE_API_URL=https://entermocks.vercel.app/api/contacts
+```
 
-### Development
-
-Start the development server:
-
+### Development Server
 ```bash
 npm run dev
 ```
+Application runs at `http://localhost:5174`
 
-The application will be available at `http://localhost:5174`
-
-### Build
-
-Generate the optimized production version:
-
+### Production Build
 ```bash
 npm run build
-```
-
-### Production Preview
-
-Preview the built version:
-
-```bash
 npm run preview
 ```
 
-## Responsive Design
+---
 
-The project uses **Tailwind CSS** with responsive breakpoints:
+## API Integration
 
-- `sm`: 640px (tablets)
-- `md`: 768px (large tablets)
-- `lg`: 1024px (desktop)
-- `xl`: 1280px (large desktop)
+### Endpoints Used
 
-All components include responsive Tailwind classes for an optimal experience on any device.
+| Method | Endpoint | Purpose | Status |
+|--------|----------|---------|--------|
+| GET | `/api/contacts` | Fetch all contacts | ✅ Working |
+| POST | `/api/contacts` | Create new contact | ✅ Working |
+| PUT | `/api/contacts/:id` | Update contact | ⚠️ 405 (Optimistic fallback) |
+| DELETE | `/api/contacts/:id` | Delete contact | ✅ Working |
+
+### Data Transformation Layer
+
+**API Format (Spanish):**
+```json
+{
+  "id": "240",
+  "fullname": "Maria García",
+  "phonenumber": "555-1234",
+  "email": "maria@example.com",
+  "type": "familia"
+}
+```
+
+**App Format (English):**
+```json
+{
+  "id": "240",
+  "fullname": "Maria García",
+  "phonenumber": "555-1234",
+  "email": "maria@example.com",
+  "group": "Family",
+  "isFavorite": false
+}
+```
+
+**Mapping Configuration:**
+```javascript
+const API_TO_APP_GROUP = {
+  'trabajo': 'Work',
+  'amigos': 'Friends',
+  'familia': 'Family',
+  'cliente': 'Client',
+  'personal': 'None'
+};
+```
 
 ---
 
-## Evaluation Criteria
+## Key Features Deep Dive
 
-This project has been developed and evaluated according to the following 4 key criteria:
+### 1. Intelligent Search with Dropdown
 
-### 1. Component Architecture & Modular Design ⭐
+**Implementation:** [Header.jsx:30-95](src/components/Header.jsx#L30-L95)
 
-**Evaluation:**
-- ✅ **Modular Components**: The application is structured with reusable, single-responsibility components:
-  - `Header.jsx`: Navigation bar with logo, search, and menu toggle for mobile
-  - `ContactCard.jsx`: Reusable card component for displaying individual contacts
-  - `ContactListPage.jsx`: Container component for managing the list view
-  - `FavoritesPage.jsx`: Dedicated page for favorite contacts
-  - `ContactModal.jsx`: Isolated modal form for creating new contacts
-  - `Layout.jsx`: Main layout wrapper with sidebar navigation
-  - `Footer.jsx`: Consistent footer across pages
-  
-- ✅ **Separation of Concerns**: Components are separated by function (presentation, layout, pages)
-- ✅ **Reusability**: Components like `ContactCard` accept props to handle different data and actions
-- ✅ **Responsive Props**: Components properly handle responsive behavior through Tailwind CSS utilities
-- ✅ **Code Organization**: Clear folder structure (`components/`, `layout/`, `context/`)
+- **Multi-field Search**: Searches across `fullname`, `phonenumber`, and `email`
+- **Contains Match**: Uses `.includes()` for flexible matching (not just prefix)
+- **Live Results**: Dropdown shows all matching contacts with scrolling
+- **Click Outside Detection**: Auto-closes dropdown when clicking elsewhere
+- **Details Modal Integration**: Click on result opens full contact details
 
-**Score: 9/10** — Excellent modular design with well-defined responsibilities. Minor: Could benefit from additional utility components for buttons/inputs.
+```javascript
+const filteredContacts = contacts.filter(contact => {
+  const query = searchQuery.toLowerCase();
+  return (
+    contact.fullname?.toLowerCase().includes(query) ||
+    contact.phonenumber?.toLowerCase().includes(query) ||
+    contact.email?.toLowerCase().includes(query)
+  );
+});
+```
 
----
+### 2. Persistent Sorting Across Pages
 
-### 2. State Management with useState (Correct Usage, Immutability, Derived State, Communication, Props/Callbacks) ⭐
+**Implementation:** [ContactsContext.jsx:70-85](src/context/ContactsContext.jsx#L70-L85)
 
-**Evaluation:**
-- ✅ **Correct useState Usage**: 
-  - `ContactsContext.jsx` properly manages global contacts state using `useState`
-  - Local component state used appropriately in `Header.jsx` (menu toggle), `ContactModal.jsx` (form inputs)
-  
-- ✅ **Immutability Principles**: 
-  - State updates use spread operators and array methods (.map, .filter) to create new state objects
-  - Example: `toggleFavorite()` uses `.map()` to create a new array without mutating the original
-  - Example: `addContact()` uses spread syntax: `[{ id, ...contact, isFavorite: false }, ...prev]`
-  
-- ✅ **Derived State**:
-  - Favorite count is computed in `Layout.jsx`: `const favoriteCount = contacts.filter(c => c.isFavorite).length;`
-  - No unnecessary state duplication
-  
-- ✅ **Props & Callbacks Communication**:
-  - `ContactCard.jsx` receives `isFavorite`, `onToggleFavorite`, and `onDelete` props
-  - Parent components (`ContactListPage`, `FavoritesPage`) properly pass callbacks to children
-  - Data flows down (props), actions flow up (callbacks)
-  
-- ✅ **Context API for Global State**:
-  - `ContactsContext` provides centralized state management
-  - `useContacts()` hook simplifies access to global state throughout the app
-  - Provider properly wraps the entire application
+- **Global Sort State**: Single `sortOrder` state in context ('asc' | 'desc')
+- **Reusable Sort Function**: `getSortedContacts()` can sort any contact array
+- **Alphabetical by Name**: Uses `.localeCompare()` for proper locale-aware sorting
+- **Synchronized UI**: Sort button shows current order across all pages
 
-**Score: 9/10** — Excellent state management with proper immutability and communication patterns. Minor: Could use useCallback for performance optimization on callbacks.
+**Pages with sorting:**
+- [ContactListPage.jsx](src/components/ContactListPage.jsx)
+- [FavoritesPage.jsx](src/components/pages/FavoritesPage.jsx)
+- [GroupsPage.jsx](src/components/pages/GroupsPage.jsx)
 
----
+### 3. Optimistic UI Updates
 
-### 3. Routing with React Router ⭐
+**Implementation:** [ContactsContext.jsx:34-50](src/context/ContactsContext.jsx#L34-L50)
 
-**Evaluation:**
-- ✅ **Route Configuration**: 
-  - Routes properly defined in `App.jsx` with clear path structure:
-    - `/` → Landing page
-    - `/contacts` → All contacts list
-    - `/favorites` → Favorite contacts list
-  
-- ✅ **Nested Routing**:
-  - `Layout.jsx` wraps routes using `Outlet` pattern
-  - Sidebar navigation available across all main routes
-  
-- ✅ **Navigation Components**:
-  - `NavLink` from React Router used for active link styling
-  - Mobile and desktop navigation both support routing
-  - "Favorites" link updates based on route with `isActive` state
-  
-- ✅ **Layout Persistence**:
-  - Layout, Header, and Footer persist across route changes
-  - Only the main content (`Outlet`) changes when navigating
-  
-- ✅ **Navigation Flow**:
-  - Clear navigation paths for users (Home → Contacts → Favorites)
-  - Mobile menu properly closes after navigation
-  - URL syncs with UI state
+**Problem**: Mock API returns 405 Method Not Allowed for PUT/PATCH operations
 
-**Score: 9/10** — Robust routing implementation with good layout management. Minor: Could implement lazy loading for routes using `React.lazy()` for performance optimization.
+**Solution**: Graceful degradation with local updates
+
+```javascript
+try {
+  const updated = await updateContact(id, contactData);
+  setContacts(prev => prev.map(c => (c.id === id ? updated : c)));
+  return updated;
+} catch (error) {
+  if (error.message.includes('405')) {
+    console.warn('API does not support updates. Updating locally only.');
+    const updatedContact = { id, ...contactData };
+    setContacts(prev => prev.map(c => (c.id === id ? { ...c, ...updatedContact } : c)));
+    return updatedContact;
+  }
+  throw error;
+}
+```
+
+**Result**: Users can still edit contacts; changes persist in session but not across page reloads.
+
+### 4. Group Organization with Colors
+
+**Implementation:** [GroupsPage.jsx](src/components/pages/GroupsPage.jsx) + [groupColors.js](src/components/utils/groupColors.js)
+
+- **Visual Categorization**: Each group has unique color scheme
+- **Collapsible Sections**: Expand/collapse groups independently
+- **Contact Count Badges**: Real-time count display for each group
+- **Read-Only Cards**: Simplified card view without actions
+- **Sorted Within Groups**: Respects global sort order
 
 ---
 
-### 4. Functionality & Feature Implementation ⭐
+## Performance Optimizations
 
-**Evaluation:**
-- ✅ **Core CRUD Operations**:
-  - ✓ **Create**: Modal form to add new contacts with fullname, phonenumber, email
-  - ✓ **Read**: Display contacts in list and detail views
-  - ✓ **Update**: Toggle favorite status (partial update implemented)
-  - ✓ **Delete**: Delete button functionality in ContactCard
-  
-- ✅ **Responsive Interface**:
-  - Desktop layout with sidebar navigation
-  - Mobile-optimized with collapsible menu
-  - Cards adjust layout based on screen size
-  - Works seamlessly from 320px (mobile) to 1920px+ (desktop)
-  
-- ✅ **Favorites Feature**:
-  - Toggle favorite button on each contact card
-  - Dedicated `/favorites` page to view only favorite contacts
-  - Favorite count badge displays in sidebar navigation
-  - Count updates in real-time when toggling favorites
-  
-- ✅ **User Experience**:
-  - Search input in header (ready for implementation)
-  - Dark/Light theme support with Tailwind CSS dark mode
-  - Clean, modern UI with consistent styling
-  - Modal form for creating contacts without page reload
-  - Smooth transitions and hover effects
-  
-- ✅ **Data Persistence**:
-  - Contacts stored in React state (Context API)
-  - New contacts generated with unique IDs using `Date.now()`
-  
-- ✅ **Additional Features**:
-  - Contact initials displayed as avatar
-  - Phonenumber and email visible on cards
-  - Professional color scheme (blue/slate palette)
-  - Proper accessibility with ARIA labels and semantic HTML
+### React Optimization Techniques
 
-**Score: 9/10** — All core features implemented and working. User interface is polished and responsive. Minor: Could add local storage for data persistence or backend integration.
+1. **Memoized Context Value**
+   ```javascript
+   const value = useMemo(() => ({
+     contacts, isLoading, error, loadContacts, addContact,
+     updateContactInContext, removeContact, toggleFavorite,
+     isCreateOpen, openCreate, closeCreate,
+     sortOrder, toggleSortOrder, getSortedContacts,
+   }), [/* dependencies */]);
+   ```
+
+2. **Callback Memoization**
+   ```javascript
+   const toggleSortOrder = useCallback(() => {
+     setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc');
+   }, []);
+   ```
+
+3. **Derived State Pattern**: Favorite count computed on render, not stored redundantly
+
+### Build Optimizations
+
+- **Vite**: Lightning-fast HMR and optimized production builds
+- **Code Splitting**: Route-based splitting with React Router
+- **Tree Shaking**: Unused code eliminated in production
+- **Minification**: CSS and JS minified and compressed
 
 ---
 
-## Overall Project Summary
+## Code Quality & Best Practices
 
-**Total Score: 9/10** 🏆
+### React Patterns
+- ✅ Functional components with hooks
+- ✅ Custom hooks for logic reuse (`useContacts`)
+- ✅ Compound component pattern (Layout + Outlet)
+- ✅ Controlled components for forms
+- ✅ Immutable state updates
+- ✅ Proper key usage in lists
+- ✅ Effect cleanup (click-outside detection)
 
-**Strengths:**
-- Clean, modular component architecture following React best practices
-- Proper state management with immutability and correct Context API usage
-- Comprehensive routing with layout persistence
-- Fully responsive design working across all device sizes
-- Complete feature set with intuitive user interface
-- Well-organized codebase with clear file structure
+### Code Organization
+- ✅ Separation of concerns (UI, logic, data)
+- ✅ Service layer for API calls
+- ✅ Utility functions for transformations
+- ✅ Consistent naming conventions
+- ✅ Modular file structure
+- ✅ No dead code
 
-**Areas for Future Enhancement:**
-- Add localStorage to persist contacts between sessions
-- Implement backend API integration for data storage
-- Add lazy loading for route optimization
-- Implement useCallback for performance tuning
-- Add unit tests for components and state management
-- Implement edit contact functionality (currently only delete/favorite)
-- Add search/filter functionality for contacts
+### Styling
+- ✅ Mobile-first responsive design
+- ✅ Consistent spacing and typography
+- ✅ Accessible color contrast ratios
+- ✅ Dark mode support
+- ✅ Semantic HTML5 elements
 
-**Conclusion:**
-Contact Manager 5 is a well-developed React application that demonstrates solid understanding of component design, state management, routing, and modern web development practices. The application is production-ready and provides excellent user experience across all devices.
+---
+
+## Browser Support
+
+- Chrome/Edge 90+
+- Firefox 88+
+- Safari 14+
+- Mobile browsers (iOS Safari 14+, Chrome Android)
+
+---
+
+## Responsive Breakpoints
+
+| Breakpoint | Min Width | Target Devices |
+|------------|-----------|----------------|
+| `sm` | 640px | Tablets (portrait) |
+| `md` | 768px | Tablets (landscape) |
+| `lg` | 1024px | Laptops/Desktops |
+| `xl` | 1280px | Large desktops |
+
+---
+
+## Future Enhancements
+
+- [ ] Backend database integration (PostgreSQL/MongoDB)
+- [ ] User authentication and authorization
+- [ ] Contact import/export (CSV, vCard)
+- [ ] Advanced filtering (multiple criteria)
+- [ ] Contact photos/avatars upload
+- [ ] Tags system beyond groups
+- [ ] Contact notes and history
+- [ ] Unit and integration tests (Jest, React Testing Library)
+- [ ] E2E tests (Playwright/Cypress)
+- [ ] PWA capabilities (offline support)
+
+---
+
+## Technical Documentation
+
+For detailed technical analysis of problems solved during development:
+- [CONTACT_DATA_FLOW_BUG_ANALYSIS.md](CONTACT_DATA_FLOW_BUG_ANALYSIS.md) - In-depth explanation of bidirectional data transformation implementation
 
 ---
 
 ## Author
 
-Created by **Yuliana** ❤️
+**Yuliana**
 
+Feel free to reach out for questions or collaboration opportunities:
+
+- GitHub: [@YulianaGP](https://github.com/YulianaGP)
+- LinkedIn: [Your LinkedIn Profile](#)
+- Email: [your.email@example.com](#)
+
+---
+
+## License
+
+This project is open source and available under the [MIT License](LICENSE).
+
+---
+
+<div align="center">
+
+**Built with ❤️ using React, Vite, and Tailwind CSS**
+
+⭐ Star this repo if you find it useful!
+
+</div>

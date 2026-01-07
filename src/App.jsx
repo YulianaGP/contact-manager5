@@ -4,6 +4,7 @@ import Layout from './layout/Layout';
 import ContactCard from './components/ContactCard';
 import ContactListPage from './components/ContactListPage';
 import FavoritesPage from './components/pages/FavoritesPage';
+import GroupsPage from './components/pages/GroupsPage';
 
 function App() {
   
@@ -16,9 +17,12 @@ function App() {
       <Route element={<Layout />}>
         {/* All contacts page */}
         <Route path="/contacts" element={<ContactListPage />} />
-        
+
         {/* Favorites page */}
         <Route path="/favorites" element={<FavoritesPage />} />
+
+        {/* Groups page */}
+        <Route path="/groups" element={<GroupsPage />} />
 
         {/* Detail route example; use your ContactCard or detail component */}
         <Route path="/contacts/:id" element={<ContactCard />} />

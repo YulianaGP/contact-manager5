@@ -1,4 +1,3 @@
-
 import { GROUP_COLORS } from './utils/groupColors';
 
 const API_URL = import.meta.env.VITE_API_URL;
@@ -10,7 +9,9 @@ export default function ContactCard({
   group = "None",
   isFavorite = false,
   onToggleFavorite = () => {},
+  onEdit,
   onDelete = () => {},
+  onDetails,
 }) {
   
   const colorClasses = GROUP_COLORS[group] ?? 'bg-white dark:bg-slate-900';
@@ -93,6 +94,7 @@ export default function ContactCard({
       <div className="mt-4 flex items-center justify-between gap-2">
         {/* Edit Button */}
         <button
+          onClick={onEdit}
           className="inline-flex items-center gap-2 px-3 py-1.5 bg-indigo-600 text-white rounded-md text-sm hover:bg-indigo-700 active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 transition"
           aria-label={`Edit ${fullname}`}
         >
@@ -101,7 +103,7 @@ export default function ContactCard({
 
         {/* Delete Button */}
         <button
-          onClick={() => onDelete()}
+          onClick={onDelete}
           className="inline-flex items-center gap-2 px-3 py-1.5 bg-rose-600 text-white rounded-md text-sm hover:bg-rose-700 active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-400 transition"
           aria-label={`Delete ${fullname}`}
         >
@@ -109,8 +111,9 @@ export default function ContactCard({
         </button>
 
         <button
-          className="px-3 py-1.5 text-sm rounded-md bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 transition"
-          aria-label={`Call to ${fullname}`}
+          onClick={onDetails}
+          className="px-3 py-1.5 text-sm rounded-md bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 transition active:scale-[0.99]"
+          aria-label={`View details for ${fullname}`}
         >
           Details
         </button>

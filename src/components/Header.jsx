@@ -1,212 +1,339 @@
 // src/components/Header.jsx
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Link, NavLink } from "react-router-dom";
 import { useContacts } from "../context/useContacts";
+import ContactDetailsModal from "./ContactDetailsModal";
 
 export default function Header() {
   const [open, setOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [selectedContact, setSelectedContact] = useState(null);
+  const searchRef = useRef(null);
 
-  const { openCreate } = useContacts();
+  const { openCreate, contacts } = useContacts();
+
+  // Filter contacts based on search query (searches in name, phone, email)
+  const filteredContacts = contacts.filter(contact => {
+    const query = searchQuery.toLowerCase();
+    return (
+      contact.fullname?.toLowerCase().includes(query) ||
+      contact.phonenumber?.toLowerCase().includes(query) ||
+      contact.email?.toLowerCase().includes(query)
+    );
+  });
+
+  // Show dropdown only if there's a query and results
+  const shouldShowDropdown = showDropdown && searchQuery.trim().length > 0;
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (searchRef.current && !searchRef.current.contains(event.target)) {
+        setShowDropdown(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+    setShowDropdown(true);
+  };
+
+  const handleContactClick = (contact) => {
+    setSelectedContact(contact);
+    setShowDropdown(false);
+    setSearchQuery("");
+  };
 
   const navItems = [
     { to: "/", label: "Home" },
     { to: "/contacts", label: "Contacts" },
-    // keep the entry for mapping but mark special action
+    // Keep the entry for mapping but mark special action
     { to: "/contacts/new", label: "Add contact", primary: true, action: openCreate },
   ];
 
   return (
-    <header
-      className="w-full bg-white text-slate-900 dark:bg-gray-900 dark:text-gray-100 shadow-sm"
-      role="banner"
-    >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          {/* Left: Logo / Title */}
-          <div className="flex items-center gap-3">
-            <Link
-              to="/"
-              className="flex items-center gap-3 group"
-              aria-label="Ir al inicio - Contact Manager"
-            >
-              <span
-                className="inline-flex items-center justify-center w-10 h-10 rounded-lg
-                           bg-blue-600 text-white font-semibold text-lg
-                           ring-0 group-hover:scale-105 transition-transform"
-                aria-hidden="true"
+    <>
+      <header
+        className="w-full bg-white text-slate-900 dark:bg-gray-900 dark:text-gray-100 shadow-sm"
+        role="banner"
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            {/* Left: Logo / Title */}
+            <div className="flex items-center gap-3">
+              <Link
+                to="/"
+                className="flex items-center gap-3 group"
+                aria-label="Go to home - Contact Manager"
               >
-                📞
-              </span>
+                <span
+                  className="inline-flex items-center justify-center w-10 h-10 rounded-lg
+                             bg-blue-600 text-white font-semibold text-lg
+                             ring-0 group-hover:scale-105 transition-transform"
+                  aria-hidden="true"
+                >
+                  📞
+                </span>
 
-              <span className="hidden sm:inline-block">
-                <span className="text-lg font-semibold leading-tight">Contact Manager</span>
-                <span className="block text-xs text-slate-500 dark:text-slate-400 -mt-0.5">My important contacts</span>
-              </span>
-            </Link>
-          </div>
+                <span className="hidden sm:inline-block">
+                  <span className="text-lg font-semibold leading-tight">Contact Manager</span>
+                  <span className="block text-xs text-slate-500 dark:text-slate-400 -mt-0.5">My important contacts</span>
+                </span>
+              </Link>
+            </div>
 
-          {/* Center: Search (visible md+) — example of peer/peer-focus */}
-          <div className="hidden md:flex md:flex-1 md:justify-center">
-            <label className="relative w-full max-w-md">
-              <input
-                type="search"
-                name="search"
-                placeholder="Search for contacts..."
-                className="
-                  peer w-full pl-10 pr-4 py-2 rounded-lg border border-gray-200
-                  bg-white text-sm placeholder:text-gray-400
-                  focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400
-                  focus:border-transparent
-                  dark:bg-gray-800 dark:border-gray-700 dark:placeholder-gray-500
-                  transition-colors
-                "
-                aria-label="Search contacts"
-              />
-              <span
-                className="
-                  absolute left-3 top-1/2 -translate-y-1/2 text-gray-400
-                  peer-focus:text-blue-600 dark:peer-focus:text-blue-400
-                "
-                aria-hidden="true"
-              >
-                🔎
-              </span>
-            </label>
-          </div>
+            {/* Center: Search (visible md+) */}
+            <div className="hidden md:flex md:flex-1 md:justify-center" ref={searchRef}>
+              <div className="relative w-full max-w-md">
+                <label className="relative w-full block">
+                  <input
+                    type="search"
+                    name="search"
+                    value={searchQuery}
+                    onChange={handleSearchChange}
+                    onFocus={() => setShowDropdown(true)}
+                    placeholder="Search for contacts..."
+                    className="
+                      peer w-full pl-10 pr-4 py-2 rounded-lg border border-gray-200
+                      bg-white text-sm placeholder:text-gray-400
+                      focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400
+                      focus:border-transparent
+                      dark:bg-gray-800 dark:border-gray-700 dark:placeholder-gray-500 dark:text-gray-100
+                      transition-colors
+                    "
+                    aria-label="Search contacts"
+                  />
+                  <span
+                    className="
+                      absolute left-3 top-1/2 -translate-y-1/2 text-gray-400
+                      peer-focus:text-blue-600 dark:peer-focus:text-blue-400
+                    "
+                    aria-hidden="true"
+                  >
+                    🔎
+                  </span>
+                </label>
 
-          {/* Right: nav / actions */}
-          <div className="flex items-center gap-3">
-            {/* Desktop nav */}
-            <nav className="hidden md:flex items-center gap-2" aria-label="Main" role="navigation">
-              {navItems.map((item) => {
-                // If the item defines an `action`, render a button that triggers it instead of a NavLink
-                if (item.action) {
+                {/* Search Dropdown */}
+                {shouldShowDropdown && (
+                  <div className="absolute z-50 w-full mt-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg max-h-96 overflow-y-auto">
+                    {filteredContacts.length === 0 ? (
+                      <div className="px-4 py-3 text-sm text-gray-500 dark:text-gray-400 text-center">
+                        No contacts found
+                      </div>
+                    ) : (
+                      <ul className="divide-y divide-gray-100 dark:divide-gray-700">
+                        {filteredContacts.map(contact => (
+                          <li key={contact.id}>
+                            <button
+                              onClick={() => handleContactClick(contact)}
+                              className="w-full px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 text-left transition-colors flex items-center gap-3"
+                            >
+                              {/* Avatar */}
+                              <div className="flex-shrink-0 w-10 h-10 rounded-full bg-indigo-600 text-white flex items-center justify-center font-semibold text-sm">
+                                {contact.fullname?.split(" ").map(n => n[0]).filter(Boolean).slice(0, 2).join("")}
+                              </div>
+
+                              {/* Contact Info */}
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-2">
+                                  <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
+                                    {contact.fullname}
+                                  </p>
+                                  {contact.isFavorite && (
+                                    <span className="text-yellow-500">⭐</span>
+                                  )}
+                                </div>
+                                <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                                  {contact.phonenumber} • {contact.email}
+                                </p>
+                              </div>
+                            </button>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Right: nav / actions */}
+            <div className="flex items-center gap-3">
+              {/* Desktop nav */}
+              <nav className="hidden md:flex items-center gap-2" aria-label="Main" role="navigation">
+                {navItems.map((item) => {
+                  // If the item defines an `action`, render a button that triggers it instead of a NavLink
+                  if (item.action) {
+                    return (
+                      <button
+                        key={item.to}
+                        type="button"
+                        onClick={item.action}
+                        className={[
+                          "px-3 py-2 rounded-md text-sm font-medium transition",
+                          item.primary
+                            ? "inline-flex items-center gap-2 bg-blue-600 text-white shadow-sm hover:bg-blue-700 active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 disabled:opacity-60 disabled:cursor-not-allowed"
+                            : "text-slate-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800",
+                        ].join(" ")}
+                      >
+                        {item.label}
+                      </button>
+                    );
+                  }
+
                   return (
-                    <button
+                    <NavLink
                       key={item.to}
-                      type="button"
-                      onClick={item.action}
-                      className={[
-                        "px-3 py-2 rounded-md text-sm font-medium transition",
-                        item.primary
-                          ? "inline-flex items-center gap-2 bg-blue-600 text-white shadow-sm hover:bg-blue-700 active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 disabled:opacity-60 disabled:cursor-not-allowed"
-                          : "text-slate-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800",
-                      ].join(" ")}
+                      to={item.to}
+                      end={item.to === "/"}
+                      className={({ isActive }) =>
+                        [
+                          "px-3 py-2 rounded-md text-sm font-medium transition",
+                          item.primary
+                            ? "inline-flex items-center gap-2 bg-blue-600 text-white shadow-sm hover:bg-blue-700 active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 disabled:opacity-60 disabled:cursor-not-allowed"
+                            : "text-slate-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800",
+                          isActive ? "ring-2 ring-blue-300 dark:ring-blue-500" : "",
+                        ].join(" ")
+                      }
+                      aria-current={({ isActive }) => (isActive ? "page" : undefined)}
                     >
                       {item.label}
-                    </button>
+                    </NavLink>
+                  );
+                })}
+              </nav>
+
+              {/* Profile / Avatar button (example) */}
+              <button
+                type="button"
+                className="hidden sm:inline-flex items-center justify-center w-9 h-9 rounded-full bg-slate-100 dark:bg-slate-800 text-sm font-medium text-slate-800 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-indigo-500 transition"
+                aria-label="Open profile"
+              >
+                Y
+              </button>
+
+              {/* Mobile menu button */}
+              <button
+                type="button"
+                onClick={() => setOpen((v) => !v)}
+                aria-expanded={open}
+                aria-controls="mobile-menu"
+                className="inline-flex items-center justify-center p-2 rounded-md text-slate-700 dark:text-slate-200 bg-transparent hover:bg-slate-100 dark:hover:bg-slate-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 md:hidden transition"
+              >
+                <span className="sr-only">Open menu</span>
+                {/* icon */}
+                <svg
+                  className="w-6 h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                  aria-hidden="true"
+                >
+                  {open ? (
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                  ) : (
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
+                  )}
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Mobile menu (collapsible) */}
+        <div
+          id="mobile-menu"
+          className={`md:hidden border-t border-slate-100 dark:border-slate-800 transition-max-h duration-200 overflow-hidden ${
+            open ? "max-h-[400px]" : "max-h-0"
+          }`}
+        >
+          <div className="px-4 pt-4 pb-6 space-y-2">
+            <ul role="list" className="space-y-1">
+              {navItems.map((item, idx) => {
+                // If the item has an action, use button
+                if (item.action) {
+                  return (
+                    <li
+                      key={item.to}
+                      className={`
+                        rounded-md px-2 py-2
+                        ${idx % 2 === 0 ? "bg-white/30 dark:bg-white/5" : ""}
+                      `}
+                    >
+                      <button
+                        onClick={() => {
+                          item.action();
+                          setOpen(false);
+                        }}
+                        className={[
+                          "block w-full text-left px-2 py-1 rounded-md transition",
+                          item.primary
+                            ? "bg-indigo-600 text-white font-semibold hover:bg-indigo-700"
+                            : "text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800",
+                        ].join(" ")}
+                      >
+                        {item.label}
+                      </button>
+                    </li>
                   );
                 }
 
                 return (
-                  <NavLink
+                  <li
                     key={item.to}
-                    to={item.to}
-                    end={item.to === "/"}
-                    className={({ isActive }) =>
-                      [
-                        "px-3 py-2 rounded-md text-sm font-medium transition",
-                        item.primary
-                          ? "inline-flex items-center gap-2 bg-blue-600 text-white shadow-sm hover:bg-blue-700 active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 disabled:opacity-60 disabled:cursor-not-allowed"
-                          : "text-slate-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800",
-                        isActive ? "ring-2 ring-blue-300 dark:ring-blue-500" : "",
-                      ].join(" ")
-                    }
-                    aria-current={({ isActive }) => (isActive ? "page" : undefined)}
+                    className={`
+                      rounded-md px-2 py-2
+                      ${idx % 2 === 0 ? "bg-white/30 dark:bg-white/5" : ""}
+                    `}
                   >
-                    {item.label}
-                  </NavLink>
+                    <NavLink
+                      to={item.to}
+                      className={({ isActive }) =>
+                        [
+                          "block w-full text-left px-2 py-1 rounded-md transition",
+                          item.primary
+                            ? "bg-indigo-600 text-white font-semibold hover:bg-indigo-700"
+                            : "text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800",
+                          isActive ? "ring-1 ring-indigo-300 dark:ring-indigo-500" : "",
+                        ].join(" ")
+                      }
+                      onClick={() => setOpen(false)}
+                    >
+                      {item.label}
+                    </NavLink>
+                  </li>
                 );
               })}
-            </nav>
+            </ul>
 
-            {/* Profile / Avatar button (example) */}
-            <button
-              type="button"
-              className="hidden sm:inline-flex items-center justify-center w-9 h-9 rounded-full bg-slate-100 dark:bg-slate-800 text-sm font-medium text-slate-800 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-indigo-500 transition"
-              aria-label="Open profile"
-            >
-              Y
-            </button>
-
-            {/* Mobile menu button */}
-            <button
-              type="button"
-              onClick={() => setOpen((v) => !v)}
-              aria-expanded={open}
-              aria-controls="mobile-menu"
-              className="inline-flex items-center justify-center p-2 rounded-md text-slate-700 dark:text-slate-200 bg-transparent hover:bg-slate-100 dark:hover:bg-slate-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 md:hidden transition"
-            >
-              <span className="sr-only">Open menu</span>
-              {/* icon */}  
-              <svg
-                className="w-6 h-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-                aria-hidden="true"
+            <div className="pt-3 border-t border-slate-100 dark:border-slate-800">
+              <button
+                className="w-full text-left px-3 py-2 rounded-md text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+                onClick={() => {
+                  // Example action for logout or go to profile
+                  setOpen(false);
+                }}
               >
-                {open ? (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                ) : (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
-                )}
-              </svg>
-            </button>
+                Profile
+              </button>
+            </div>
           </div>
         </div>
-      </div>
+      </header>
 
-      {/* Mobile menu (collapsible) */}
-      <div
-        id="mobile-menu"
-        className={`md:hidden border-t border-slate-100 dark:border-slate-800 transition-max-h duration-200 overflow-hidden ${
-          open ? "max-h-[400px]" : "max-h-0"
-        }`}
-      >
-        <div className="px-4 pt-4 pb-6 space-y-2">
-          <ul role="list" className="space-y-1">
-            {navItems.map((item, idx) => (
-              <li
-                key={item.to}
-                className={`
-                  rounded-md px-2 py-2
-                  ${idx % 2 === 0 ? "bg-white/30 dark:bg-white/5" : ""}
-                `}
-              >
-                <NavLink
-                  to={item.to}
-                  className={({ isActive }) =>
-                    [
-                      "block w-full text-left px-2 py-1 rounded-md transition",
-                      item.primary
-                        ? "bg-indigo-600 text-white font-semibold hover:bg-indigo-700"
-                        : "text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800",
-                      isActive ? "ring-1 ring-indigo-300 dark:ring-indigo-500" : "",
-                    ].join(" ")
-                  }
-                  onClick={() => setOpen(false)}
-                >
-                  {item.label}
-                </NavLink>
-              </li>
-            ))}
-          </ul>
-
-          <div className="pt-3 border-t border-slate-100 dark:border-slate-800">
-            <button
-              className="w-full text-left px-3 py-2 rounded-md text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
-              onClick={() => {
-                // example action for logout or go to profile
-                setOpen(false);
-              }}
-            >
-              Profile
-            </button>
-          </div>
-        </div>
-      </div>
-    </header>
+      {/* Contact Details Modal */}
+      {selectedContact && (
+        <ContactDetailsModal
+          contact={selectedContact}
+          onClose={() => setSelectedContact(null)}
+        />
+      )}
+    </>
   );
 }
