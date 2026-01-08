@@ -1,34 +1,58 @@
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { fetchContacts, createContact, updateContact, deleteContact } from '../services/contactService';
 import { ContactsContext } from './useContacts';
+import { useLocalStorage } from '../hooks/useLocalStorage';
+import { useToast } from '../hooks/useToast';
 
 export function ContactsProvider({ children }) {
-  const [contacts, setContacts] = useState([]);
+  const { showToast } = useToast();
+  const [contacts, setContacts] = useLocalStorage('contacts', []);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [isCreateOpen, setCreateOpen] = useState(false);
-  const [sortOrder, setSortOrder] = useState('asc'); // 'asc' for A-Z, 'desc' for Z-A
+  const [sortOrder, setSortOrder] = useLocalStorage('sortOrder', 'asc'); // 'asc' for A-Z, 'desc' for Z-A
 
-  // Load contacts from API
+  // Load contacts from API and merge with local favorites
   const loadContacts = useCallback(async () => {
     setIsLoading(true);
     setError(null);
     try {
-      const data = await fetchContacts();
-      setContacts(data);
+      const apiContacts = await fetchContacts();
+
+      // Merge API data with local favorites
+      const mergedContacts = apiContacts.map(apiContact => {
+        const localContact = contacts.find(c => c.id === apiContact.id);
+        return {
+          ...apiContact,
+          // Preserve local favorite status
+          isFavorite: localContact?.isFavorite || apiContact.isFavorite || false
+        };
+      });
+
+      setContacts(mergedContacts);
     } catch (err) {
       setError(err.message);
+      // If API fails and we have cached data, keep using it
+      if (contacts.length > 0) {
+        console.warn('API failed, using cached contacts from localStorage');
+      }
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [contacts, setContacts]);
 
   // Create contact
   const addContact = useCallback(async (contactData) => {
-    const newContact = await createContact(contactData);
-    setContacts(prev => [newContact, ...prev]);
-    return newContact;
-  }, []);
+    try {
+      const newContact = await createContact(contactData);
+      setContacts(prev => [newContact, ...prev]);
+      showToast('Contact created successfully!', 'success');
+      return newContact;
+    } catch (error) {
+      showToast(`Error creating contact: ${error.message}`, 'error');
+      throw error;
+    }
+  }, [setContacts, showToast]);
 
   // Update contact (optimistic update - API doesn't support PUT/PATCH)
   const updateContactInContext = useCallback(async (id, contactData) => {
@@ -36,6 +60,7 @@ export function ContactsProvider({ children }) {
     try {
       const updated = await updateContact(id, contactData);
       setContacts(prev => prev.map(c => (c.id === id ? updated : c)));
+      showToast('Contact updated successfully!', 'success');
       return updated;
     } catch (error) {
       // If API doesn't support updates (405), update locally
@@ -43,17 +68,25 @@ export function ContactsProvider({ children }) {
         console.warn('API does not support updates. Updating locally only.');
         const updatedContact = { id, ...contactData };
         setContacts(prev => prev.map(c => (c.id === id ? { ...c, ...updatedContact } : c)));
+        showToast('Contact updated locally (API unavailable)', 'warning');
         return updatedContact;
       }
+      showToast(`Error updating contact: ${error.message}`, 'error');
       throw error;
     }
-  }, []);
+  }, [setContacts, showToast]);
 
   // Delete contact
   const removeContact = useCallback(async (id) => {
-    await deleteContact(id);
-    setContacts(prev => prev.filter(c => c.id !== id));
-  }, []);
+    try {
+      await deleteContact(id);
+      setContacts(prev => prev.filter(c => c.id !== id));
+      showToast('Contact deleted successfully!', 'success');
+    } catch (error) {
+      showToast(`Error deleting contact: ${error.message}`, 'error');
+      throw error;
+    }
+  }, [setContacts, showToast]);
 
   // Toggle favorite
   const toggleFavorite = useCallback((id) => {
