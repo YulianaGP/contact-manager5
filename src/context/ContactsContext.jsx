@@ -19,15 +19,22 @@ export function ContactsProvider({ children }) {
     try {
       const apiContacts = await fetchContacts();
 
+      console.log('🔍 DEBUG - API Contacts (after transform):', apiContacts.slice(0, 2));
+      console.log('🔍 DEBUG - First contact group:', apiContacts[0]?.group, 'type:', apiContacts[0]?.type);
+
       // Merge API data with local favorites
       const mergedContacts = apiContacts.map(apiContact => {
         const localContact = contacts.find(c => c.id === apiContact.id);
-        return {
+        const merged = {
           ...apiContact,
           // Preserve local favorite status
           isFavorite: localContact?.isFavorite || apiContact.isFavorite || false
         };
+        return merged;
       });
+
+      console.log('🔍 DEBUG - Merged Contacts:', mergedContacts.slice(0, 2));
+      console.log('🔍 DEBUG - First merged contact group:', mergedContacts[0]?.group, 'type:', mergedContacts[0]?.type);
 
       setContacts(mergedContacts);
     } catch (err) {
@@ -88,12 +95,57 @@ export function ContactsProvider({ children }) {
     }
   }, [setContacts, showToast]);
 
+  // Import contacts from file
+  const importContacts = useCallback((importedContacts) => {
+    try {
+      let addedCount = 0;
+      let skippedCount = 0;
+
+      const updatedContacts = [...contacts];
+
+      importedContacts.forEach(imported => {
+        // Check for duplicates (case-insensitive name comparison)
+        const exists = contacts.find(c =>
+          c.fullname.toLowerCase() === imported.fullname.toLowerCase()
+        );
+
+        if (!exists) {
+          // Generate unique ID for new contact
+          const newContact = {
+            ...imported,
+            id: Date.now() + Math.random()
+          };
+          updatedContacts.push(newContact);
+          addedCount++;
+        } else {
+          skippedCount++;
+        }
+      });
+
+      setContacts(updatedContacts);
+
+      // Show appropriate toast message
+      if (addedCount > 0 && skippedCount === 0) {
+        showToast(`${addedCount} contact${addedCount > 1 ? 's' : ''} imported successfully!`, 'success');
+      } else if (addedCount > 0 && skippedCount > 0) {
+        showToast(`${addedCount} imported, ${skippedCount} skipped (duplicates)`, 'info');
+      } else if (skippedCount > 0) {
+        showToast(`All contacts already exist (${skippedCount} duplicates)`, 'warning');
+      }
+
+      return { addedCount, skippedCount };
+    } catch (error) {
+      showToast(`Error importing contacts: ${error.message}`, 'error');
+      throw error;
+    }
+  }, [contacts, setContacts, showToast]);
+
   // Toggle favorite
   const toggleFavorite = useCallback((id) => {
     setContacts(prev =>
       prev.map(c => (c.id === id ? { ...c, isFavorite: !c.isFavorite } : c))
     );
-  }, []);
+  }, [setContacts]);
 
   // Open/Close create modal
   const openCreate = useCallback(() => setCreateOpen(true), []);
@@ -125,6 +177,7 @@ export function ContactsProvider({ children }) {
     addContact,
     updateContactInContext,
     removeContact,
+    importContacts,
     toggleFavorite,
     isCreateOpen,
     openCreate,
@@ -140,6 +193,7 @@ export function ContactsProvider({ children }) {
     addContact,
     updateContactInContext,
     removeContact,
+    importContacts,
     toggleFavorite,
     isCreateOpen,
     openCreate,

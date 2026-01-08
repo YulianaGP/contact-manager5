@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Clear LocalStorage</title>
+</head>
+<body>
+    <h1>Clear Contact Manager LocalStorage</h1>
+    <button onclick="clearStorage()">Clear Storage</button>
+    <div id="result"></div>
+    
+    <script>
+        function clearStorage() {
+            localStorage.removeItem('contacts');
+            localStorage.removeItem('sortOrder');
+            localStorage.removeItem('searchHistory');
+            document.getElementById('result').innerHTML = '<p style="color: green;">✓ LocalStorage cleared! Refresh your app.</p>';
+        }
+    </script>
+</body>
+</html>

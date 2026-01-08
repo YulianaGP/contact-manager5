@@ -5,9 +5,10 @@ import ContactCard from './components/ContactCard';
 import ContactListPage from './components/ContactListPage';
 import FavoritesPage from './components/pages/FavoritesPage';
 import GroupsPage from './components/pages/GroupsPage';
+import DashboardPage from './components/pages/DashboardPage';
 
 function App() {
-  
+
   return (
     <Routes>
       {/* Landing page (without Layout) */}
@@ -15,6 +16,9 @@ function App() {
 
       {/* MAIN AREA: Layout is mounted when user enters /contacts or related routes */}
       <Route element={<Layout />}>
+        {/* Dashboard page */}
+        <Route path="/dashboard" element={<DashboardPage />} />
+
         {/* All contacts page */}
         <Route path="/contacts" element={<ContactListPage />} />
 

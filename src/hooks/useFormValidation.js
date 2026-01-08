@@ -72,7 +72,8 @@ export function useFormValidation(initialValues, validatorRules) {
     setValues(initialValues);
     setErrors({});
     setTouched({});
-  }, [initialValues]);
+  }, []);  // eslint-disable-line react-hooks/exhaustive-deps
+  // initialValues should not be in dependencies as it's not expected to change
 
   /**
    * Set form values programmatically
